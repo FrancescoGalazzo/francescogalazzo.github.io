@@ -123,12 +123,7 @@ giscus:
   theme: "preferred_color_scheme"
   lang: "en"
 
-defaults:
-  - scope:
-      path: "_posts"
-      type: posts
-    values:
-      giscus_comments: true
+
 
 # Disqus comments (DEPRECATED)
 disqus_shortname: al-folio # put your disqus shortname
@@ -247,6 +242,11 @@ defaults:
       path: "assets"
     values:
       sitemap: false
+  - scope:
+      path: "_posts"
+      type: posts
+    values:
+      giscus_comments: true
 
 sass:
   style: compressed
