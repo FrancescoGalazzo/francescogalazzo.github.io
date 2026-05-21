@@ -25,7 +25,7 @@ Unlike a plain text editor, an IDE understands your code. It can:
 - **Debug interactively** — pause execution, inspect variables, and step through code line by line.
 - **Integrate with Git** — stage, commit, and review diffs without leaving the editor.
 
-A good IDE does not make you a better developer automatically, but it removes friction and surfaces problems earlier, which gives you more mental space to focus on logic and design.
+A good IDE removes friction and surfaces problems earlier, which gives you more mental space to focus on logic and design.
 
 **Recommended IDEs:**
 

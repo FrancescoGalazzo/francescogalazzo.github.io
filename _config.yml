@@ -674,3 +674,26 @@ jsonresume:
   - languages
   - interests
   - references
+
+
+
+
+giscus:
+  repo: "francescogalazzo/francescogalazzo.github.io"
+  repo_id: "R_kgDOSQRRpw"
+  category: "Announcements"
+  category_id: "DIC_kwDOSQRRp84C9jjr"
+  mapping: "pathname"
+  strict: "1"
+  reactions_enabled: "1"
+  emit_metadata: "0"
+  input_position: "bottom"
+  theme: "preferred_color_scheme"
+  lang: "en"
+
+defaults:
+  - scope:
+      path: "_posts"
+      type: posts
+    values:
+      giscus_comments: true
