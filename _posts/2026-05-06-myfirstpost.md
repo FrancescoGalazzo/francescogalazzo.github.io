@@ -6,6 +6,7 @@ description: A deep dive into the principles, habits, tools, and mindset that se
 tags: programming best-practices clean-code software-engineering
 categories: coding
 featured: false
+related_posts: false
 ---
 
 In my experience, these are the practices that every developer should follow, regardless of language or framework. If you're early in your career, internalizing these habits will accelerate your growth faster than any new library or tool. If you're experienced, this is a useful checklist to audit yourself against.
