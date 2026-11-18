@@ -21,8 +21,11 @@ ninja.data = [{
           description: "",
           section: "Books",handler: () => {
               window.location.href = "/books/the_godfather/";
-            },},{id: "news-my-first-post-coding-best-practices-smile",
-          title: 'My first post: Coding Best Practices :smile:',
+            },},{id: "news-solving-exercism-s-secret-handshake-in-java",
+          title: 'Solving Exercism’s Secret Handshake in Java',
+          description: "",
+          section: "News",},{id: "news-workshop-selection-using-dynamic-programming-in-java",
+          title: 'Workshop Selection Using Dynamic Programming in Java',
           description: "",
           section: "News",},{id: "projects-project-1",
           title: 'project 1',
