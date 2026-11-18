@@ -1,59 +1,47 @@
 ---
 layout: post
-title: "Software Testing in Java: Why You Should Just Write the Tests"
+title: "Software Testing in Java: A Practical Guide to JUnit 5"
 date: 2026-05-20
-description: A personal take on why testing should be a natural habit when writing code, and a detailed guide on how to do it in Java with JUnit 5.
-tags: programming java testing junit software-engineering
-categories: coding
+description: A practical, example-driven guide to testing in Java — the testing landscape, JUnit 5 basics, assertions, parameterized tests, Mockito, and the TDD loop.
+tags: [programming, java, testing, junit, software-engineering]
+categories: [coding]
 featured: false
 ---
 
-Let me be honest with you: for a long time, I treated tests as something you write *after* the code is done — a bureaucratic step you rush through before pushing to the repo. If you've ever thought the same, this post is for you. Because at some point it clicked: **testing isn't a chore you do after coding, it's part of coding itself.**
+I will be honest with you: for a long time I treated tests as something you write *after* the code is done — a boring step you rush through before pushing to the repo. If you ever thought the same, this post is for you.
 
-I think the root of the problem is how testing is often taught. It shows up at the end of a course, in a chapter that half the students skip. It's presented as a separate discipline — something QA people do, not developers. But that framing is wrong, and it costs teams an enormous amount of time and stress.
+At some point it clicked for me: **testing is not a chore you do after coding. It is part of coding itself.** This post is the guide I wish I had read back then — short on theory, long on examples.
 
-## The Real Cost of Not Testing
+## Why Bother Writing Tests?
 
-Think about the last time you changed a method, ran the app, manually clicked through a few screens, and convinced yourself everything was fine. We've all been there. It feels efficient in the moment. The problem is that manual verification doesn't scale. As the codebase grows, the surface area of things that can silently break when you touch something grows with it — and your ability to check everything manually shrinks.
+Picture the typical "no tests" workflow: you change a method, run the app, click through a few screens, and convince yourself everything works. It feels fast. The problem is that it does not scale:
 
-A well-placed test catches a regression in milliseconds. A missing test lets it reach production, and reach your users. Beyond that, testing gives you something less tangible but equally valuable: **confidence**. When your test suite is green, you can refactor aggressively, add features without anxiety, and merge pull requests without that nagging feeling that you've broken something somewhere. That peace of mind is not a luxury — it's what allows a codebase to keep moving fast as it matures.
+- **Manual checking gets slower over time.** Every new feature adds more things you should re-check by hand.
+- **A well-written test catches a bug in milliseconds.** A missing test lets that bug reach production and your users.
+- **Tests give you confidence.** When the suite is green, you can refactor and add features without the fear of silently breaking something.
 
-## What Software Testing Actually Is
+The habit feels slower at first, then quietly makes everything faster.
 
-At its core, software testing is the process of evaluating and verifying that a software product functions correctly, securely, and as intended. It splits into two broad families. The first is **dynamic testing** — actually running the software and checking its outputs against expected results. The second is **static testing** — reviewing code, documentation, or design artifacts without executing them. Think code reviews, linting, and static analysis tools like SpotBugs or SonarQube.
+## The Map: Four Levels of Testing
 
-Both approaches are useful and complementary. But as developers writing application code day to day, dynamic testing — and unit testing in particular — is where most of our leverage is. It's fast, it's local, and it runs on every build.
+Testing happens at different levels. Knowing the map keeps you oriented:
 
-## The Four Levels of Testing
+| Level | What It Tests | Example | Who Runs It |
+|---|---|---|---|
+| **Unit** | One method or class, in isolation | "does `add(2, 3)` return 5?" | Developers |
+| **Integration** | Components working together | "does `UserService` save via the repository correctly?" | Developers |
+| **System** | The whole application against requirements | "can a user complete checkout end to end?" | QA team |
+| **Acceptance** | Real user/business needs | "does this actually solve the user's problem?" | Stakeholders |
 
-Testing doesn't happen at a single level. It unfolds across a spectrum of abstraction, each level targeting a different scope of the system.
+As a developer, you own the first two levels. That is where this post — and JUnit — live.
 
-**Unit testing** is the most granular. It tests individual methods and classes in complete isolation from the rest of the system. This is the developer's primary responsibility. **Integration testing** comes next: it verifies that separate components work correctly when combined — that your service talks to your repository as expected, that your API layer correctly calls your business logic. **System testing** then validates the entire application against its functional requirements, typically owned by a QA team. Finally, **acceptance testing** answers the highest-level question of all: does the software actually meet the real needs of its users and stakeholders?
+A few extra terms you will hear: **regression testing** (re-running the suite to catch anything broken by new changes), **smoke testing** (a quick sanity check on critical paths after a build), **performance testing** (behavior under load), and **exploratory testing** (unscripted, curiosity-driven probing). You do not need them daily, but recognizing the words helps.
 
-| Level | What It Tests | Who Typically Runs It |
-|---|---|---|
-| **Unit Testing** | Individual methods and classes in isolation | Developers |
-| **Integration Testing** | Interaction between combined components | Developers / QA |
-| **System Testing** | The entire application against requirements | QA team |
-| **Acceptance Testing** | Whether the software meets real user/business needs | Stakeholders / Clients |
+## Setting Up JUnit 5
 
-As developers, we own the bottom two levels. Understanding the upper levels helps us write better unit and integration tests that don't leave dangerous blind spots.
+JUnit 5 is the standard testing framework for Java. One dependency and you are ready.
 
-## Other Testing Types Worth Knowing
-
-Beyond those four levels, a few specialized categories come up regularly in real projects and are worth having in your vocabulary.
-
-**Regression testing** confirms that new changes haven't broken existing functionality. It's the bedrock of CI/CD pipelines — the suite that runs automatically on every push. **Smoke testing** is a quick sanity check that the most critical paths still work after a new build, before investing time in deeper testing. **Performance testing** evaluates how the system behaves under load — response times, throughput, and stability under stress. **Security testing** proactively identifies vulnerabilities before attackers find them. And **exploratory testing** is the unscripted, curiosity-driven kind, where a tester actively looks for unexpected behaviour with no predefined script to follow.
-
-You won't always need all of these, but knowing they exist means you'll recognize when to reach for them.
-
-## JUnit 5 in Practice
-
-Now let's get concrete. **JUnit 5** — also known as JUnit Jupiter — is the standard unit testing framework for Java. It's mature, expressive, and integrates natively with Maven, Gradle, IntelliJ IDEA, and Eclipse. If you write Java professionally, you will use it.
-
-### Setting Up
-
-For **Maven**, add this to your `pom.xml`:
+**Maven** (`pom.xml`):
 
 ```xml
 <dependency>
@@ -64,59 +52,26 @@ For **Maven**, add this to your `pom.xml`:
 </dependency>
 ```
 
-For **Gradle**:
+**Gradle** (`build.gradle`):
 
 ```groovy
 testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 ```
 
-### The Test Lifecycle
+## Your First Test
 
-One of the things I appreciate most about JUnit 5 is how explicitly it models the lifecycle of a test. Before any test runs, you can set up state. After each test, you can clean it up. The annotations that control this are:
-
-| Annotation | When It Runs |
-|---|---|
-| `@BeforeAll` | Once before all tests in the class |
-| `@BeforeEach` | Before every single test method |
-| `@Test` | The test itself |
-| `@AfterEach` | After every single test method |
-| `@AfterAll` | Once after all tests in the class |
-
-The golden rule is: **never share mutable state between tests**. Each test should start with a clean slate. `@BeforeEach` is the tool for that:
+Here is the class we want to test:
 
 ```java
-class OrderServiceTest {
-
-    private OrderService orderService;
-
-    @BeforeEach
-    void setUp() {
-        orderService = new OrderService(); // fresh instance for every test
-    }
-
-    @AfterEach
-    void tearDown() {
-        // cleanup if needed (e.g. close resources)
-    }
-}
-```
-
-### Basic Tests and Assertions
-
-Let's start with something simple — a `Calculator` class:
-
-```java
-// Calculator.java
 public class Calculator {
-    public int add(int a, int b)        { return a + b; }
-    public int subtract(int a, int b)   { return a - b; }
-    public int multiply(int a, int b)   { return a * b; }
-    public int divide(int a, int b)     { return a / b; }
+    public int add(int a, int b)      { return a + b; }
+    public int divide(int a, int b)   { return a / b; }
 }
 ```
 
+And here is its test class:
+
 ```java
-// CalculatorTest.java
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -126,7 +81,7 @@ class CalculatorTest {
 
     @BeforeEach
     void setUp() {
-        calculator = new Calculator();
+        calculator = new Calculator();   // fresh object for every test
     }
 
     @Test
@@ -140,166 +95,187 @@ class CalculatorTest {
     void testDivideByZero() {
         assertThrows(ArithmeticException.class, () -> calculator.divide(10, 0));
     }
-
-    @Test
-    @DisplayName("Multiply result should be positive and correct")
-    void testMultiplyAssertAll() {
-        int result = calculator.multiply(3, 4);
-        assertAll("multiply checks",
-            () -> assertNotNull(result),
-            () -> assertTrue(result > 0),
-            () -> assertEquals(12, result)
-        );
-    }
 }
 ```
 
-Notice `assertAll()` in that last test. Unlike stacking multiple `assertEquals` calls, `assertAll()` runs every assertion inside it and reports *all* failures at once, rather than stopping at the first. When debugging a failing test, that difference is huge.
+Reading it line by line:
 
-### Parameterized Tests
+- `@Test` marks a method as a test — you can have as many as you want.
+- `@DisplayName` gives the test a human-readable name in the report.
+- `assertEquals(expected, actual)` compares two values.
+- `assertThrows(Exception.class, () -> ...)` checks that running that code throws the given exception.
+- `@BeforeEach` runs **before every single test**, giving each one a fresh `Calculator`.
 
-This is where JUnit 5 really earns its keep. Rather than duplicating a test method for every input combination you want to cover, `@ParameterizedTest` lets you express the same logic once and feed it a table of data:
+The golden rule behind `@BeforeEach`: **never share mutable state between tests.** Each test should start from a clean slate, so a failure always points at one specific problem.
+
+## The Full Lifecycle
+
+JUnit models the life of a test explicitly. The five annotations, in order:
+
+| Annotation | When It Runs | Typical Use |
+|---|---|---|
+| `@BeforeAll` | Once, before all tests in the class | Expensive setup (start a server) |
+| `@BeforeEach` | Before every test method | Fresh objects and state |
+| `@Test` | The test itself | Your assertions |
+| `@AfterEach` | After every test method | Cleanup |
+| `@AfterAll` | Once, after all tests | Expensive teardown |
+
+## The Assertions You Actually Need
+
+Assertions are the vocabulary of tests. These six cover almost everything:
+
+| Assertion | Question It Answers | Example |
+|---|---|---|
+| `assertEquals(x, y)` | Are these equal? | `assertEquals(10, calc.add(4, 6));` |
+| `assertTrue(cond)` | Is this true? | `assertTrue(result > 0);` |
+| `assertFalse(cond)` | Is this false? | `assertFalse(list.isEmpty());` |
+| `assertNull(x)` / `assertNotNull(x)` | Is this null / not null? | `assertNotNull(user);` |
+| `assertThrows(Ex.class, () -> ...)` | Does this throw? | `assertThrows(ArithmeticException.class, () -> calc.divide(1, 0));` |
+| `assertAll(...)` | Do all of these checks hold? | see below |
+
+One nuance worth knowing — plain `assertEquals` calls stop at the first failure, so you fix one thing at a time. `assertAll()` runs *every* assertion inside it and reports **all** failures at once:
 
 ```java
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import static org.junit.jupiter.api.Assertions.*;
+@Test
+void testMultiply() {
+    int result = calculator.multiply(3, 4);
+    assertAll("multiply checks",
+        () -> assertNotNull(result),
+        () -> assertTrue(result > 0),
+        () -> assertEquals(12, result)
+    );
+}
+```
 
-class CalculatorParameterizedTest {
+When a test fails, seeing all three broken expectations at once saves you two extra run-fix cycles.
+
+## Parameterized Tests: One Test, Many Inputs
+
+Copying and pasting a test method for every input combination gets old fast. `@ParameterizedTest` writes the logic once and feeds it data:
+
+```java
+@ParameterizedTest(name = "{0} + {1} = {2}")
+@CsvSource({
+    "1,  2,  3",
+    "5,  5, 10",
+    "-3, 3,  0",
+    "0,  0,  0"
+})
+void testAdd(int a, int b, int expected) {
+    assertEquals(expected, calculator.add(a, b));
+}
+```
+
+The `@CsvSource` table maps each row to the method parameters: the first row runs `testAdd(1, 2, 3)`, the second `testAdd(5, 5, 10)`, and so on. Four test runs, one method.
+
+For single-argument tests, `@ValueSource` is even simpler:
+
+```java
+@ParameterizedTest
+@ValueSource(ints = {1, 2, 3, 100, -5})
+void testAddZero(int number) {
+    assertEquals(number, calculator.add(number, 0));
+}
+```
+
+Rule of thumb: **the same logic with different data → parameterized test. Different logic → different test method.**
+
+## Grouping with @Nested
+
+When a test class grows, `@Nested` classes group related tests into a readable hierarchy:
+
+```java
+@DisplayName("Calculator")
+class CalculatorNestedTest {
 
     private final Calculator calculator = new Calculator();
 
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 3, 100, -5})
-    @DisplayName("Adding zero should always return the same number")
-    void testAddZero(int number) {
-        assertEquals(number, calculator.add(number, 0));
-    }
-
-    @ParameterizedTest(name = "{0} + {1} = {2}")
-    @CsvSource({
-        "1,  2,  3",
-        "5,  5, 10",
-        "-3, 3,  0",
-        "0,  0,  0"
-    })
-    void testAddWithMultipleInputs(int a, int b, int expected) {
-        assertEquals(expected, calculator.add(a, b));
-    }
-}
-```
-
-`@ValueSource` handles single-argument tests cleanly. `@CsvSource` is perfect for multi-column tabular data, and the `name` attribute even formats the test name in the output, making failures immediately readable. For more complex objects, `@MethodSource` lets you supply a `Stream<Arguments>` from a static factory method.
-
-### Nested Tests
-
-`@Nested` classes let you group related tests under a shared context, giving your test file a logical hierarchy that mirrors your domain:
-
-```java
-@DisplayName("Calculator Tests")
-class CalculatorNestedTest {
-
-    private Calculator calculator = new Calculator();
-
     @Nested
-    @DisplayName("Addition")
+    @DisplayName("addition")
     class AdditionTests {
-        @Test void addsPositiveNumbers()  { assertEquals(5,  calculator.add(2, 3));   }
-        @Test void addsNegativeNumbers()  { assertEquals(-5, calculator.add(-2, -3)); }
-        @Test void addsMixedNumbers()     { assertEquals(1,  calculator.add(4, -3));  }
+        @Test void positiveNumbers() { assertEquals(5, calculator.add(2, 3));  }
+        @Test void negativeNumbers() { assertEquals(-5, calculator.add(-2, -3)); }
     }
 
     @Nested
-    @DisplayName("Division")
+    @DisplayName("division")
     class DivisionTests {
-        @Test void dividesTwoNumbers()    { assertEquals(2, calculator.divide(10, 5)); }
-        @Test void throwsOnDivideByZero() {
-            assertThrows(ArithmeticException.class, () -> calculator.divide(5, 0));
-        }
+        @Test void dividesNumbers() { assertEquals(2, calculator.divide(10, 5)); }
+        @Test void divideByZero()   { assertThrows(ArithmeticException.class,
+                                                  () -> calculator.divide(5, 0)); }
     }
 }
 ```
 
-When these run in your IDE, the test results tree mirrors the nested structure exactly. It reads almost like a specification document, which is precisely the point.
+In the IDE's test tree this renders as *Calculator → addition → positiveNumbers* — it reads like a specification.
 
-### Mocking with Mockito
+## Mocking with Mockito
 
-Real-world classes rarely live in isolation. A `UserService` depends on a `UserRepository`. A `PaymentService` calls an external gateway. You don't want your unit test to spin up a real database or make real HTTP calls — so you *mock* the dependency, replacing it with a controlled fake that you can instruct to return specific values.
+Real classes have dependencies: a `UserService` needs a `UserRepository`. In a unit test you do not want a real database — so you replace the dependency with a **mock**: a fake object you fully control.
 
-Mockito is the standard library for this in Java. Add it alongside JUnit 5:
-
-```xml
-<dependency>
-    <groupId>org.mockito</groupId>
-    <artifactId>mockito-junit-jupiter</artifactId>
-    <version>5.12.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-Then wire it in with `@ExtendWith`:
+Mockito is the standard library for this:
 
 ```java
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Optional;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     @Mock
-    private UserRepository userRepository;  // fake, fully controlled by us
+    private UserRepository userRepository;  // fake repository
 
     @InjectMocks
-    private UserService userService;        // the class under test
+    private UserService userService;        // real service, with the fake injected
 
     @Test
-    @DisplayName("Should return user when found by ID")
-    void testGetUserById() {
+    void getUserById_returnsUser() {
         User user = new User(1, "Mario");
+
+        // given: the mock returns Mario when asked for id 1
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
+        // when + then
         User result = userService.getUserById(1);
 
         assertEquals("Mario", result.getName());
-        verify(userRepository, times(1)).findById(1);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when user not found")
-    void testGetUserByIdNotFound() {
-        when(userRepository.findById(99)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(99));
+        verify(userRepository, times(1)).findById(1);  // interaction was really used
     }
 }
 ```
 
-`@Mock` creates a fake `UserRepository`. `@InjectMocks` automatically wires it into `UserService`. `when(...).thenReturn(...)` defines the fake's behaviour for a specific input. And `verify(...)` asserts that the mock was actually called the expected number of times — so you're not just checking the return value, you're checking the interaction itself.
+Four pieces to remember:
 
-## The TDD Mindset
+- `@Mock` creates the fake.
+- `@InjectMocks` puts the fake into the real class under test.
+- `when(...).thenReturn(...)` scripts the fake's behavior.
+- `verify(...)` checks the fake was actually called — testing the *interaction*, not just the result.
 
-All of the above becomes even more powerful when you flip the order: write the test *before* the code. This is **Test-Driven Development (TDD)**, and it follows a short loop:
+## The TDD Loop
 
-1. **Red** — write a test for behaviour that doesn't exist yet; watch it fail
-2. **Green** — write the *minimum* code to make it pass
-3. **Refactor** — clean up the code freely, knowing the test has your back
+Everything above becomes even more powerful when you flip the order: write the test **before** the code. That is Test-Driven Development, and the loop is just three steps:
 
-Writing the test first forces you to think about the interface and behaviour of your code before you think about the implementation. You end up with smaller, more focused methods, clearer responsibilities, and a test suite that grows naturally alongside your production code rather than being retrofitted after the fact.
+1. **Red** — write a test for behavior that does not exist yet; watch it fail.
+2. **Green** — write the minimum code needed to make it pass.
+3. **Refactor** — clean up freely, knowing the test protects you.
+
+Writing the test first forces you to think about *what* the code should do before thinking *how*. You end up with smaller methods, clearer responsibilities, and a suite that grows with the code instead of being retrofitted later.
 
 ## Running Your Tests
 
-- **IntelliJ IDEA / Eclipse**: right-click the test class or method → *Run*
-- **Maven**: `mvn test`
-- **Gradle**: `gradle test`
+- **IntelliJ / Eclipse**: right-click the test class (or single method) → *Run*.
+- **Maven**: `mvn test` — report in `target/surefire-reports`.
+- **Gradle**: `gradle test` — report in `build/reports/tests`.
 
-Your build tool will generate a report under `target/surefire-reports` (Maven) or `build/reports/tests` (Gradle) with a full breakdown of passed, failed, and skipped tests.
+## Cheat Sheet
 
----
+| I want to... | Use |
+|---|---|
+| Check a value | `assertEquals(expected, actual)` |
+| Check an exception | `assertThrows(Ex.class, () -> ...)` |
+| Run many input combinations | `@ParameterizedTest` + `@CsvSource` / `@ValueSource` |
+| Reset state before each test | `@BeforeEach` |
+| See all failures at once | `assertAll(...)` |
+| Group related tests | `@Nested` |
+| Replace a dependency with a fake | `@Mock` + `@InjectMocks` + `when(...)` |
+| Check a dependency was called | `verify(mock)` |
+| Structure development | Red → Green → Refactor |
 
-Writing tests is one of those habits that feels slightly slower at first and then, quietly, makes everything faster. The codebase stays cleaner, refactoring becomes less scary, and bugs get caught before users ever see them. Your future self — staring at a green CI pipeline at 11pm before a release — will be grateful.
+Writing tests is one of those habits that feels slower at first and then quietly makes everything faster. The codebase stays cleaner, refactoring stops being scary, and bugs get caught before anyone else sees them. Your future self — staring at a green pipeline at 11pm before a release — will be grateful.

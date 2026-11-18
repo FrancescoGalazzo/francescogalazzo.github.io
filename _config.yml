@@ -96,7 +96,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 # -----------------------------------------------------------------------------
 
 blog_name: "Notes on Curiosity" # blog_name will be displayed in your blog page
-blog_description: "Notes on Curiosity is my open notebook: small essays, technical notes, and reflections on whatever I'm trying to understand better."
+blog_description: "" #blog_description: Notes on Curiosity is my open notebook: small essays, technical notes, and reflections on whatever I'm trying to understand better.
 permalink: /blog/:year/:title/
 lsi: false # produce an index for related posts
 
